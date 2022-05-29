@@ -2,7 +2,7 @@
 
 #Two dimensional Cellular Automaton
 #TODO: Change naming to be consistent
-type CA2d
+mutable struct CA2d
 
     #User given values
     k::Int #Number of states
@@ -19,8 +19,8 @@ type CA2d
                   r::Int=1)
 
         h, w = size(init)
-        cells = Array(Int8, h, w, gen)
-        cells[:, :, 1] = Array{Int8}(init[:, :])
+        cells = Array{Int}(undef, h, w, gen)
+        cells[:, :, 1] = Array{Int}(init[:, :])
 
         for g = 2:gen
             for i = 1:h, j = 1:w

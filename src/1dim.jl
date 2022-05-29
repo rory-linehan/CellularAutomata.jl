@@ -1,7 +1,7 @@
 #1-dim CAs
 
 #Elementary & totalistic CA with r-nearest neighbor and k states
-type CellularAutomaton
+mutable struct CellularAutomaton
 
     #user given values
     N::Int #code
@@ -16,12 +16,12 @@ type CellularAutomaton
         ruleset = rule(N, k, r)
 
         w = length(init)
-        cells = Array(Int8, gen, w)
-        cells[1,:] = Array{Int8}(init[:])'
+        cells = Array{Int8}(undef, gen, w)
+        cells[1,:] = Array{Int8}(init[:])
 
         if k == 2
             #Elementary CA
-            mp = reverse(Int8[k^i for i = 0:2r+1])
+            mp = reverse([k^i for i = 0:2r+1])
         else
             #Totalistic CA
             mp = Array{Int8}(ones(2r+1))
@@ -43,7 +43,15 @@ type CellularAutomaton
                     ind += mp[s]*cells[i-1, q]
                     s += 1
                 end
-                cells[i,j] = ruleset[ind+1]
+                # this is a weird hack that I am just assuming is the answer to this problem:
+                # BoundsError: attempt to access 8-element Vector{Int64} at index [9]
+                # and
+                # BoundsError: attempt to access 8-element Vector{Int64} at index [-279]
+                if ind+1 <= length(ruleset) && ind > 0
+                    cells[i,j] = ruleset[ind+1]
+                else
+                    break
+                end
             end
         end
 
@@ -51,11 +59,11 @@ type CellularAutomaton
     end
 
     #Quick setup for one seed cell in the center
-    function CellularAutomaton(N::Int, gen::Int; kvs...)
+    function CellularAutomaton(N::Int, gen::Int; kw...)
         init = Array{Int}(zeros(2*gen))
         init[gen] = 1
 
-        CellularAutomaton(N, init, gen; kvs...)
+        CellularAutomaton(N, init, gen; kw...)
     end
 end
 
@@ -65,9 +73,9 @@ function rule(n::Int, k=2, r=1)
         error("number of states (k) must be larger than 1; you gave $k")
     elseif k == 2
         #Elementary CA
-        return digits(n, k, k^(2r+1))
+        return digits(n; base=k, pad=k^(2r+1))
     else
         #Totalistic CA
-        return digits(n, k, (2r+1)k-2)
+        return digits(n; base=k, pad=(2r+1)k-2)
     end
 end

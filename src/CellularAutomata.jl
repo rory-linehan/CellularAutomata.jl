@@ -38,7 +38,7 @@ function show(io::IO, ca::CellularAutomaton)
         print(io2,"\n")
     end
 
-    print(io, String(io2))
+    print(io, String(take!(io2)))
 end
 
 #Print CA to screen
@@ -68,7 +68,7 @@ function show(io::IO, ca::CA2d)
         print(io2,"\n\n")
     end
 
-    print(io, String(io2))
+    print(io, String(take!(io2)))
 end
 
 

@@ -1,6 +1,6 @@
 using CellularAutomata
 using Tk
-importall Cairo
+import Cairo
 
 function sim_life(init::Array{Int,2},B, S)
     m, n = size(init)
